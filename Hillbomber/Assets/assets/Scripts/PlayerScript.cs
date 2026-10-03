@@ -1,4 +1,5 @@
 using System.Collections;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,6 +8,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private MapGeneration _mapGenerator;
     [SerializeField] private GameObject _playerObject;
     [SerializeField] private GameObject _deathParticle;
+    [SerializeField] private AnimatorController _controller;
     [SerializeField] private Camera _camera;
 
     [SerializeField] private float _gracePeriod = 5f;
