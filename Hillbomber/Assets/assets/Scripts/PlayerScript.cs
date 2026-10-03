@@ -151,7 +151,7 @@ public class PlayerScript : MonoBehaviour
             if (_gracePeriod > 0f) return;
         }
 
-        _controller.StopPlayback();
+        _controller.enabled = false;
 
         Instantiate(_deathParticle, transform);
         StartCoroutine(DelayedDeath(2.5f));

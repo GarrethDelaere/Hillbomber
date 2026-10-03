@@ -950,6 +950,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration
   _roadPrefabs:
   - {fileID: 985448073}
+  - {fileID: 679169429379852169, guid: c5e649e87984d9c46b89cec86ab65f99, type: 3}
   _rampPrefabs:
   - {fileID: 92289119}
   _bombPrefabs:
@@ -968,7 +969,7 @@ MonoBehaviour:
   _bombChance: 0.444
   _carChance: 0.642
   _initialSegments: 10
-  _spawnDistance: 150
+  _spawnDistance: 250
   _destroyDistance: 20
   GenerationIncline: 15
   PlayerTransform: {fileID: 1131554463}
