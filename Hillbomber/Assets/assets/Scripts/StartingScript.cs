@@ -11,6 +11,11 @@ public class StartingScript : MonoBehaviour
         Instance = this;
     }
 
+    public void Start()
+    {
+        
+    }
+
     public void OnDeath()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

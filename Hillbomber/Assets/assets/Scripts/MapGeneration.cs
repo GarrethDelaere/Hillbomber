@@ -65,7 +65,9 @@ public class MapGeneration : MonoBehaviour
 
         // 1. Spawn Road
         GameObject selectedRoad = _roadPrefabs[Random.Range(0, _roadPrefabs.Count)];
-        GameObject roadInstance = Instantiate(selectedRoad, _nextRoadSpawnPoint, slopeRotation, transform);
+        Quaternion roadRotation = slopeRotation * selectedRoad.transform.rotation;
+
+        GameObject roadInstance = Instantiate(selectedRoad, _nextRoadSpawnPoint, roadRotation, transform);
         _activeRoads.Add(roadInstance);
 
         // 2. Spawn Side Buildings
