@@ -13,7 +13,6 @@ public class MapGeneration : MonoBehaviour
     [SerializeField] private float _buildingWidth = 10f;
     [SerializeField] private float _roadWidth = 8f;
     [SerializeField] private float _roadLength = 20f;
-    [SerializeField] private int _lanesCount = 3;
 
     [Range(0f, 1f)][SerializeField] private float _rampChance = 0.15f;
     [Range(0f, 1f)][SerializeField] private float _bombChance = 0.2f;
@@ -35,6 +34,7 @@ public class MapGeneration : MonoBehaviour
     private readonly List<GameObject> _activeCars = new List<GameObject>();
 
     private Vector3 _nextRoadSpawnPoint = Vector3.zero;
+
     private void Start()
     {
         if (PlayerTransform == null) return;
@@ -90,11 +90,11 @@ public class MapGeneration : MonoBehaviour
     {
         if (_rampPrefabs == null || _rampPrefabs.Count == 0 || Random.value > _rampChance) return false;
 
-        float lanePos = GetRandomLaneOffset();
+        float xOffset = GetRandomXOffset(1.0f); // 1.0f buffer for wider object like ramp
         Vector3 rightDir = slopeRotation * Vector3.right;
         Vector3 forwardDir = slopeRotation * Vector3.forward;
 
-        Vector3 rampPos = roadPos + (rightDir * lanePos) + (forwardDir * (_roadLength * 0.25f));
+        Vector3 rampPos = roadPos + (rightDir * xOffset) + (forwardDir * (_roadLength * 0.25f));
 
         GameObject selectedRamp = _rampPrefabs[Random.Range(0, _rampPrefabs.Count)];
         Quaternion rampRotation = slopeRotation * selectedRamp.transform.rotation;
@@ -109,13 +109,13 @@ public class MapGeneration : MonoBehaviour
     {
         if (_bombPrefabs == null || _bombPrefabs.Count == 0 || Random.value > _bombChance) return;
 
-        float lanePos = GetRandomLaneOffset();
+        float xOffset = GetRandomXOffset(0.5f);
         float randomOffsetZ = Random.Range(-_roadLength * 0.35f, _roadLength * 0.35f);
 
         Vector3 rightDir = slopeRotation * Vector3.right;
         Vector3 forwardDir = slopeRotation * Vector3.forward;
 
-        Vector3 bombPos = roadPos + (rightDir * lanePos) + (forwardDir * randomOffsetZ);
+        Vector3 bombPos = roadPos + (rightDir * xOffset) + (forwardDir * randomOffsetZ);
 
         GameObject selectedBomb = _bombPrefabs[Random.Range(0, _bombPrefabs.Count)];
         GameObject bombInstance = Instantiate(selectedBomb, bombPos, selectedBomb.transform.rotation * slopeRotation, transform);
@@ -126,13 +126,13 @@ public class MapGeneration : MonoBehaviour
     {
         if (_carPrefabs == null || _carPrefabs.Count == 0 || Random.value > _carChance) return;
 
-        float lanePos = GetRandomLaneOffset();
+        float xOffset = GetRandomXOffset(0.8f);
         float randomOffsetZ = Random.Range(-_roadLength * 0.35f, _roadLength * 0.35f);
 
         Vector3 rightDir = slopeRotation * Vector3.right;
         Vector3 forwardDir = slopeRotation * Vector3.forward;
 
-        Vector3 carPos = roadPos + (rightDir * lanePos) + (forwardDir * randomOffsetZ);
+        Vector3 carPos = roadPos + (rightDir * xOffset) + (forwardDir * randomOffsetZ);
 
         bool driveForward = Random.value > 0.5f;
         Quaternion carRotation = slopeRotation * Quaternion.Euler(0f, driveForward ? 0f : 180f, 0f);
@@ -176,15 +176,13 @@ public class MapGeneration : MonoBehaviour
         }
     }
 
-    private float GetRandomLaneOffset()
+    private float GetRandomXOffset(float objectRadiusBuffer = 0.5f)
     {
-        if (_lanesCount <= 1) return 0f;
+        // Keep objects inside road boundary using buffer offset
+        float halfUsableWidth = (_roadWidth / 2f) - objectRadiusBuffer;
+        halfUsableWidth = Mathf.Max(0f, halfUsableWidth);
 
-        float usableWidth = _roadWidth - 2f; // Safety buffer from road edges
-        float laneSpacing = usableWidth / (_lanesCount - 1);
-        int randomLane = Random.Range(0, _lanesCount);
-
-        return -(usableWidth / 2f) + (randomLane * laneSpacing);
+        return Random.Range(-halfUsableWidth, halfUsableWidth);
     }
 
     private void CleanupBehindPlayer()
@@ -209,7 +207,6 @@ public class MapGeneration : MonoBehaviour
                 continue;
             }
 
-            // Directional distance along path vector relative to player
             Vector3 toObject = list[i].transform.position - PlayerTransform.position;
             float dotDistance = Vector3.Dot(toObject, forwardVector);
 
