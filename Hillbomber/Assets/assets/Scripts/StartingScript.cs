@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
 public class StartingScript : MonoBehaviour
@@ -13,7 +14,12 @@ public class StartingScript : MonoBehaviour
 
     public void Start()
     {
-        
+        Time.timeScale = 0f;
+    }
+    
+    public void OnEnterAction(InputAction.CallbackContext ctx)
+    {
+        Time.timeScale = 1f;
     }
 
     public void OnDeath()

@@ -7,6 +7,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private GameObject _playerObject;
     [SerializeField] private Camera _camera;
 
+    [SerializeField] private float _gracePeriod = 5f;
     [SerializeField] private float _speed = 15f;
     [SerializeField] private float _extraSpeed = 5f;
     [SerializeField] private float _acceleration = 10f;
@@ -50,6 +51,8 @@ public class PlayerScript : MonoBehaviour
     private bool _wasGroundedLastFrame;
     private float _currentImpactShake;
 
+    private Vector3 _lastPosition;
+
     public void OnMoveAction(InputAction.CallbackContext ctx)
     {
         _moveInput = ctx.ReadValue<Vector2>();
@@ -90,11 +93,26 @@ public class PlayerScript : MonoBehaviour
         HandleSpeed();
         HandleMovement();
         HandleVisualTilt();
+        HandleDeath();
+        _lastPosition = transform.position;
+        _gracePeriod = Mathf.Clamp(_gracePeriod - Time.deltaTime, 0f, _gracePeriod);
     }
 
     private void LateUpdate()
     {
         UpdateCamera();
+    }
+
+    private void HandleDeath()
+    {
+        if (Time.timeScale <= 0f) return;
+        if (_lastPosition == null) return;
+
+        if (Vector3.Distance(_lastPosition, transform.position) > 0.01) return;
+
+        if (_gracePeriod > 0f) return;
+
+        StartingScript.Instance.OnDeath();
     }
 
     private void HandleSpeed()
