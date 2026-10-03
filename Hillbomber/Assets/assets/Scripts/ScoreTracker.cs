@@ -23,8 +23,6 @@ public class ScoreTracker : MonoBehaviour
     {
         Score += amount;
         UpdateScores();
-
-        Debug.Log($"Score: {(int)Score}");
     }
 
     private void UpdateScores()

@@ -1,5 +1,5 @@
 using System.Collections;
-using UnityEditor.Animations;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,8 +8,10 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private MapGeneration _mapGenerator;
     [SerializeField] private GameObject _playerObject;
     [SerializeField] private GameObject _deathParticle;
-    [SerializeField] private AnimatorController _controller;
+    [SerializeField] private Animator _controller;
     [SerializeField] private Camera _camera;
+
+    [SerializeField] private List<string> _trickAnimationNames;
 
     [SerializeField] private float _gracePeriod = 5f;
     [SerializeField] private float _speed = 15f;
@@ -52,6 +54,8 @@ public class PlayerScript : MonoBehaviour
     private CharacterController _characterController;
     private bool _isJumping;
 
+    private bool _animationPlaying;
+
     private bool _wasGroundedLastFrame;
     private float _currentImpactShake;
 
@@ -68,6 +72,34 @@ public class PlayerScript : MonoBehaviour
         {
             ApplyHeight(_jumpingHeight);
         }
+    }
+
+    public void OnTrickAction(InputAction.CallbackContext ctx)
+    {
+        if (_characterController.isGrounded) return;
+        if (_animationPlaying) return;
+
+        string anim = _trickAnimationNames[Random.Range(0, _trickAnimationNames.Count - 1)];
+
+        _animationPlaying = true;
+        StartCoroutine(CheckAnimationEnd(anim));
+    }
+
+    private IEnumerator CheckAnimationEnd(string stateName)
+    {
+        _controller.Play(stateName);
+
+        yield return null;
+
+        AnimatorStateInfo stateInfo = _controller.GetCurrentAnimatorStateInfo(0);
+
+        while (stateInfo.IsName(stateName) && stateInfo.normalizedTime < 1.0f)
+        {
+            stateInfo = _controller.GetCurrentAnimatorStateInfo(0);
+            yield return null;
+        }
+
+        _animationPlaying = false;
     }
 
     private void Start()
@@ -109,12 +141,17 @@ public class PlayerScript : MonoBehaviour
 
     private void HandleDeath()
     {
-        if (Time.timeScale <= 0f) return;
-        if (_lastPosition == null) return;
+        if (!_characterController.isGrounded || !_animationPlaying)
+        {
+            if (Time.timeScale <= 0f) return;
+            if (_lastPosition == null) return;
 
-        if (Vector3.Distance(_lastPosition, transform.position) > 0.01) return;
+            if (Vector3.Distance(_lastPosition, transform.position) > 0.01) return;
 
-        if (_gracePeriod > 0f) return;
+            if (_gracePeriod > 0f) return;
+        }
+
+        _controller.StopPlayback();
 
         Instantiate(_deathParticle, transform);
         StartCoroutine(DelayedDeath(2.5f));

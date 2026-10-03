@@ -251,6 +251,33 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &811075586 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4706118808266675069, guid: ab73700f1f8521841a2d87a995372b66, type: 3}
+  m_PrefabInstance: {fileID: 8365838445788979880}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &811075588
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 811075586}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d076be92e9139af46bee9d1357090dad, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &837450323
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,7 +502,12 @@ MonoBehaviour:
   _mapGenerator: {fileID: 2048399875}
   _playerObject: {fileID: 784973667184393160, guid: ab73700f1f8521841a2d87a995372b66, type: 3}
   _deathParticle: {fileID: 5364437434414289564, guid: 932e7b6807fae5542857edbf42d3fe7a, type: 3}
+  _controller: {fileID: 811075588}
   _camera: {fileID: 1143367931}
+  _trickAnimationNames:
+  - SKM_Cat|ANIM_CatHelicopter
+  - SKM_Cat|ANIM_CatSpinning
+  - SKM_Cat|SKM_CatAction
   _gracePeriod: 5
   _speed: 17.5
   _extraSpeed: 10
@@ -552,7 +584,19 @@ MonoBehaviour:
     m_ActionId: 6c2ab1b8-8984-453a-af3d-a3c78ae1679a
     m_ActionName: 'Player/Attack[/Mouse/leftButton,/Keyboard/enter]'
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1131554464}
+        m_TargetAssemblyTypeName: PlayerScript, Assembly-CSharp
+        m_MethodName: OnTrickAction
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 852140f2-7766-474d-8707-702459ba45f3
     m_ActionName: 'Player/Interact[/Keyboard/e]'
   - m_PersistentCalls:
@@ -1120,7 +1164,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4706118808266675069, guid: ab73700f1f8521841a2d87a995372b66, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 811075588}
   m_SourcePrefab: {fileID: 100100000, guid: ab73700f1f8521841a2d87a995372b66, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
