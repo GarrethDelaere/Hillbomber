@@ -64,6 +64,8 @@ public class PlayerScript : MonoBehaviour
 
     private Vector3 _lastPosition;
 
+    private AudioHighPassFilter _audioHighPass;
+
     public void OnMoveAction(InputAction.CallbackContext ctx)
     {
         _moveInput = ctx.ReadValue<Vector2>();
@@ -108,6 +110,12 @@ public class PlayerScript : MonoBehaviour
 
     private void Start()
     {
+        if (_gameMusic.TryGetComponent(out AudioHighPassFilter filter))
+        {
+            filter.enabled = false;
+            _audioHighPass = filter;
+        }
+
         if (!TryGetComponent(out _characterController))
         {
             _characterController = gameObject.AddComponent<CharacterController>();
@@ -206,10 +214,17 @@ public class PlayerScript : MonoBehaviour
     {
         bool isGrounded = _characterController.isGrounded;
 
+        if (!isGrounded && _wasGroundedLastFrame)
+        {
+            _audioHighPass.enabled = true;
+        }
+
         if (isGrounded && !_wasGroundedLastFrame)
         {
             float impactForce = Mathf.Abs(_verticalVelocity.y);
             _currentImpactShake = impactForce * _landingShakeMultiplier;
+
+            _audioHighPass.enabled = false;
         }
         _wasGroundedLastFrame = isGrounded;
 

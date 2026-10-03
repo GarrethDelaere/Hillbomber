@@ -639,7 +639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1c2ea032f4af6341960228874398b93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerScript
-  _gameMusic: {fileID: 0}
+  _gameMusic: {fileID: 410482721}
   _mapGenerator: {fileID: 2048399875}
   _playerObject: {fileID: 784973667184393160, guid: ab73700f1f8521841a2d87a995372b66, type: 3}
   _deathParticle: {fileID: 5364437434414289564, guid: 932e7b6807fae5542857edbf42d3fe7a, type: 3}
