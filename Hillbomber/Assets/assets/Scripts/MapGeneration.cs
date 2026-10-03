@@ -4,9 +4,10 @@ using UnityEngine;
 public class MapGeneration : MonoBehaviour
 {
     // Configs
-    [SerializeField] private List<GameObject> _roadPrefab;
-    [SerializeField] private List<GameObject> _bombPrefab;
+    [SerializeField] private List<GameObject> _roadPrefabs;
+    [SerializeField] private List<GameObject> _bombPrefabs;
     [SerializeField] private List<GameObject> _buildingPrefabs;
+    [SerializeField] private List<GameObject> _carPrefabs;
 
     [SerializeField] private float _buildingWidth = 10f;
     [SerializeField] private float _roadWidth = 8f;
@@ -43,7 +44,7 @@ public class MapGeneration : MonoBehaviour
 
         for (int i = 0; i < _initialSegments; i++)
         {
-
+            SpawnNextSegment();
         }
     }
 
@@ -62,12 +63,12 @@ public class MapGeneration : MonoBehaviour
 
     private void SpawnNextSegment()
     {
-        if (_roadPrefab == null || _roadPrefab.Count == 0) return;
+        if (_roadPrefabs == null || _roadPrefabs.Count == 0) return;
 
         Quaternion slopeRotation = Quaternion.Euler(GenerationIncline, 0f, 0f);
 
         // 1. Spawn Road Segment
-        GameObject selectedRoad = _roadPrefab[Random.Range(0, _roadPrefab.Count)];
+        GameObject selectedRoad = _roadPrefabs[Random.Range(0, _roadPrefabs.Count)];
         GameObject roadInstance = Instantiate(selectedRoad, _nextRoadSpawnPoint, slopeRotation, transform);
         _activeRoads.Add(roadInstance);
 
@@ -125,16 +126,27 @@ public class MapGeneration : MonoBehaviour
 
     private void TrySpawnBomb(Vector3 roadPos, Quaternion slopeRotation)
     {
-        if (_bombPrefab == null || _bombPrefab.Count == 0 || Random.value > _bombChance) return;
+        if (_bombPrefabs == null || _bombPrefabs.Count == 0 || Random.value > _bombChance) return;
 
-        // Pick random lane (-3, 0, 3)
-        float[] laneOffsets = new float[] { -3f, 0f, 3f };
-        float laneX = laneOffsets[Random.Range(0, laneOffsets.Length)];
+        // 1. Pick a random X offset anywhere within the road width
+        // Subtract a small buffer (e.g. 1f) so bombs don't spawn clipping off the road edge
+        float halfWidthBuffer = (_roadWidth / 2f) - 1f;
+        float randomX = Random.Range(-halfWidthBuffer, halfWidthBuffer);
+
+        // 2. Pick a random Z offset along the length of the road tile so bombs aren't all in a straight horizontal line
+        float randomZ = Random.Range(-_roadLength / 2f, _roadLength / 2f);
 
         Vector3 rightDir = slopeRotation * Vector3.right;
-        Vector3 bombPos = roadPos + (rightDir * laneX) + (slopeRotation * Vector3.up * 0.5f);
+        Vector3 forwardDir = slopeRotation * Vector3.forward;
 
-        GameObject selectedBomb = _bombPrefab[Random.Range(0, _bombPrefab.Count)];
+        // Calculate position relative to slope orientation
+        Vector3 bombPos = roadPos
+            + (rightDir * randomX)
+            + (forwardDir * randomZ)
+            + (slopeRotation * Vector3.up * 0.5f);
+
+        // 3. Fix: Pick from _bombPrefabs instead of _roadPrefabs
+        GameObject selectedBomb = _bombPrefabs[Random.Range(0, _bombPrefabs.Count)];
         GameObject bombInstance = Instantiate(selectedBomb, bombPos, slopeRotation, transform);
         _activeBombs.Add(bombInstance);
     }
