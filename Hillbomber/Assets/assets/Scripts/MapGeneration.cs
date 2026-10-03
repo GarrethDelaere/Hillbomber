@@ -8,7 +8,6 @@ public class MapGeneration : MonoBehaviour
     [SerializeField] private List<GameObject> _bombPrefab;
     [SerializeField] private List<GameObject> _buildingPrefabs;
 
-    [SerializeField] private float _generationIncline = 15f;
     [SerializeField] private float _buildingWidth = 10f;
     [SerializeField] private float _roadWidth = 8f;
     [SerializeField] private float _roadLength = 20f;
@@ -19,6 +18,8 @@ public class MapGeneration : MonoBehaviour
 
     [SerializeField] private float _spawnDistance = 150f; // how far ahead it will spawn in buildings
     [SerializeField] private float _destroyDistance = 20f; // required distance to destroy behind player
+
+    public float GenerationIncline = 15f;
 
     public Transform PlayerTransform;
 
@@ -63,7 +64,7 @@ public class MapGeneration : MonoBehaviour
     {
         if (_roadPrefab == null || _roadPrefab.Count == 0) return;
 
-        Quaternion slopeRotation = Quaternion.Euler(_generationIncline, 0f, 0f);
+        Quaternion slopeRotation = Quaternion.Euler(GenerationIncline, 0f, 0f);
 
         // 1. Spawn Road Segment
         GameObject selectedRoad = _roadPrefab[Random.Range(0, _roadPrefab.Count)];
@@ -78,7 +79,7 @@ public class MapGeneration : MonoBehaviour
         TrySpawnBomb(_nextRoadSpawnPoint, slopeRotation);
 
         // Advance next spawn point along the incline vector
-        float rad = _generationIncline * Mathf.Deg2Rad;
+        float rad = GenerationIncline * Mathf.Deg2Rad;
         Vector3 step = new Vector3(
             0f,
             -Mathf.Sin(rad) * _roadLength,
