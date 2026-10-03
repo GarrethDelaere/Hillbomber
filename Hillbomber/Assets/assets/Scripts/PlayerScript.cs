@@ -232,6 +232,8 @@ public class PlayerScript : MonoBehaviour
         Vector3 forwardMove = transform.forward * totalSpeed;
         Vector3 lateralMove = transform.right * _smoothedSteeringInput;
 
+        SpeedTracker.Instance.SetSpeed(totalSpeed);
+
         ScoreTracker.Instance.AddScore(totalSpeed * Time.deltaTime);
 
         if (_characterController.isGrounded && !_isJumping)

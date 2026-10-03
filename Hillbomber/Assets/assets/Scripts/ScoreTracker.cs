@@ -4,7 +4,7 @@ using UnityEngine;
 public class ScoreTracker : MonoBehaviour
 {
     public static ScoreTracker Instance;
-    public float Score { get; private set; }
+    public float Speed { get; private set; }
 
     [SerializeField] private TextMeshProUGUI _scoreText;
 
@@ -21,7 +21,7 @@ public class ScoreTracker : MonoBehaviour
     }
     public void AddScore(float amount)
     {
-        Score += amount;
+        Speed += amount;
         UpdateScores();
     }
 
@@ -29,6 +29,6 @@ public class ScoreTracker : MonoBehaviour
     {
         if (_scoreText == null) return;
 
-        _scoreText.text = $"Score: {(int)Score}";
+        _scoreText.text = $"Score: {(int)Speed}";
     }
 }
