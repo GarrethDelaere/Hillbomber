@@ -285,7 +285,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1.2, y: 1.2, z: 1.2}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &153489814
 MeshRenderer:
@@ -371,6 +371,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b08c2c07f27b61e449b925356cb5c234, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BombScript
+  _bombHeight: 16
 --- !u!1 &837450323
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,15 +537,19 @@ MonoBehaviour:
   _speed: 25
   _acceleration: 10
   _deceleration: 12
-  _cameraFOV: 70
-  _cameraMaxFOVOffset: 10
-  _cameraFOVOffsetMultiplier: 0.1
   _gravity: -9.81
-  _cameraDistance: 2
   _steeringSpeed: 12
   _steeringDamping: 8
   _roadWidthLimit: 3.5
   _jumpingHeight: 4.5
+  _cameraDistance: 2
+  _cameraFOV: 70
+  _cameraMaxFOVOffset: 10
+  _cameraFOVOffsetMultiplier: 0.1
+  _airborneFOVBoost: 5
+  _cameraRollAngle: 3
+  _speedShakeIntensity: 0.03
+  _landingShakeMultiplier: 0.08
 --- !u!114 &1131554465
 MonoBehaviour:
   m_ObjectHideFlags: 0

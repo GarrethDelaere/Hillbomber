@@ -10,11 +10,7 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float _speed = 15f;
     [SerializeField] private float _acceleration = 10f;
     [SerializeField] private float _deceleration = 12f;
-    [SerializeField] private float _cameraFOV = 70f;
-    [SerializeField] private float _cameraMaxFOVOffset = 10f;
-    [SerializeField] private float _cameraFOVOffsetMultiplier = 0.2f;
     [SerializeField] private float _gravity = -15f;
-    [SerializeField] private float _cameraDistance = 6f;
 
     [SerializeField] private float _steeringSpeed = 12f;
     [SerializeField] private float _steeringDamping = 8f;
@@ -22,12 +18,26 @@ public class PlayerScript : MonoBehaviour
 
     [SerializeField] private float _jumpingHeight = 3f;
 
+    [SerializeField] private float _cameraDistance = 6f;
+    [SerializeField] private float _cameraFOV = 70f;
+    [SerializeField] private float _cameraMaxFOVOffset = 15f;
+    [SerializeField] private float _cameraFOVOffsetMultiplier = 0.3f;
+    [SerializeField] private float _airborneFOVBoost = 5f;
+
+    [SerializeField] private float _cameraRollAngle = 3f;
+    [SerializeField] private float _speedShakeIntensity = 0.03f;
+    [SerializeField] private float _landingShakeMultiplier = 0.08f;
+
     private float _smoothedSteeringInput;
     private float _currentForwardSpeed;
     private Vector3 _verticalVelocity;
     private Vector2 _moveInput;
     private CharacterController _characterController;
     private bool _isJumping;
+
+    private bool _wasGroundedLastFrame;
+    private float _currentImpulseShake;
+    private float _currentImpactShake;
 
     public void OnMoveAction(InputAction.CallbackContext ctx)
     {
@@ -93,6 +103,20 @@ public class PlayerScript : MonoBehaviour
 
     private void HandleMovement()
     {
+        bool isGrounded = _characterController.isGrounded;
+
+        // --- LANDING DETECTION FIX ---
+        // Detect impact BEFORE resetting _verticalVelocity.y
+        if (isGrounded && !_wasGroundedLastFrame)
+        {
+            float impactForce = Mathf.Abs(_verticalVelocity.y);
+            if (impactForce > 3f) // Trigger impact if falling faster than -3 units/sec
+            {
+                _currentImpactShake = impactForce * _landingShakeMultiplier;
+            }
+        }
+        _wasGroundedLastFrame = isGrounded;
+
         Vector3 forwardMove = transform.forward * _currentForwardSpeed;
         Vector3 lateralMove = transform.right * _smoothedSteeringInput;
 
@@ -130,7 +154,6 @@ public class PlayerScript : MonoBehaviour
     {
         if (_playerObject == null) return;
 
-        // Banking/tilt angle when steering left or right
         float targetTilt = -_moveInput.x * 15f;
         Quaternion targetRotation = Quaternion.Euler(0f, 0f, targetTilt);
         _playerObject.transform.localRotation = Quaternion.Slerp(
@@ -140,15 +163,35 @@ public class PlayerScript : MonoBehaviour
         );
     }
 
-    private void UpdateCamera()
+   private void UpdateCamera()
     {
         if (_camera == null) return;
+
         Vector3 targetCameraPos = transform.position
             - (transform.forward * _cameraDistance)
             + (transform.up * (_cameraDistance * 0.4f));
-        _camera.transform.position = Vector3.Lerp(_camera.transform.position, targetCameraPos, Time.deltaTime * 12f);
-        float fovOffset = Mathf.Clamp(_currentForwardSpeed * _cameraFOVOffsetMultiplier, 0f, _cameraMaxFOVOffset);
-        _camera.fieldOfView = Mathf.Lerp(_camera.fieldOfView, _cameraFOV + fovOffset, Time.deltaTime * 5f);
+
+        float speedRatio = Mathf.Clamp01(_currentForwardSpeed / _speed);
+        float continuousRumble = speedRatio * _speedShakeIntensity;
+
+        float totalShake = continuousRumble + _currentImpulseShake;
+        Vector3 shakeOffset = Random.insideUnitSphere * totalShake;
+
+        _camera.transform.position = Vector3.Lerp(
+            _camera.transform.position, 
+            targetCameraPos + shakeOffset, 
+            Time.deltaTime * 12f
+        );
+
+        float targetCameraRoll = -_moveInput.x * _cameraRollAngle;
+        Quaternion targetRotation = transform.rotation * Quaternion.Euler(5f, 0f, targetCameraRoll);
+        _camera.transform.rotation = Quaternion.Slerp(_camera.transform.rotation, targetRotation, Time.deltaTime * 8f);
+
+        float speedFovOffset = Mathf.Clamp(_currentForwardSpeed * _cameraFOVOffsetMultiplier, 0f, _cameraMaxFOVOffset);
+        float airborneFovOffset = !_characterController.isGrounded ? _airborneFOVBoost : 0f;
+        
+        float targetFOV = _cameraFOV + speedFovOffset + airborneFovOffset;
+        _camera.fieldOfView = Mathf.Lerp(_camera.fieldOfView, targetFOV, Time.deltaTime * 5f);
     }
 
     public void ApplyHeight(float height)

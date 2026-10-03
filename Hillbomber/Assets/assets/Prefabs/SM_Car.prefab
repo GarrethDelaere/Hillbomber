@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 404619712967759352}
   - component: {fileID: 6590856314420883032}
   - component: {fileID: 304708678310895623}
+  - component: {fileID: 3378328407945715091}
   - component: {fileID: 5963719117377246814}
   m_Layer: 0
   m_Name: SM_Car
@@ -92,6 +93,19 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &3378328407945715091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4662905362500623678}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b814166e71a5a7a48986fc830099a2e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CarColorScript
+  _mat: {fileID: 2100000, guid: 494058df9451f7a44b57e43973c29546, type: 2}
 --- !u!64 &5963719117377246814
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -33,8 +33,6 @@ public class MapGeneration : MonoBehaviour
     private List<GameObject> _activeCars;
 
     private Vector3 _nextRoadSpawnPoint = Vector3.zero;
-    private float _leftBuildingZOffset = 0f;
-    private float _rightBuildingZOffset = 0f;
 
     private void Start()
     {
