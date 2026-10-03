@@ -487,7 +487,7 @@ MonoBehaviour:
   _steeringSpeed: 2
   _steeringDamping: 8
   _airSteerPenalty: 0.1
-  _roadWidthLimit: 3.8
+  _roadWidthLimit: 8.5
   _jumpingHeight: 1
   _cameraDistance: 2
   _cameraFOV: 70
@@ -916,7 +916,7 @@ MonoBehaviour:
   _carPrefabs:
   - {fileID: 4662905362500623678, guid: 40d9ee079b2f3cc4e918da7bfb85eae5, type: 3}
   _buildingWidth: 6
-  _roadWidth: 15
+  _roadWidth: 18
   _roadLength: 10
   _lanesCount: 3
   _rampChance: 0.195
