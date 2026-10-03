@@ -170,6 +170,8 @@ public class PlayerScript : MonoBehaviour
         Vector3 forwardMove = transform.forward * totalSpeed;
         Vector3 lateralMove = transform.right * _smoothedSteeringInput;
 
+        ScoreTracker.Instance.AddScore(totalSpeed * Time.deltaTime);
+
         if (_characterController.isGrounded && !_isJumping)
         {
             _verticalVelocity.y = -2f;
@@ -181,6 +183,7 @@ public class PlayerScript : MonoBehaviour
         }
 
         Vector3 totalMotion = (forwardMove + lateralMove + _verticalVelocity) * Time.deltaTime;
+
         _characterController.Move(totalMotion);
 
         Vector3 currentPos = transform.position;
