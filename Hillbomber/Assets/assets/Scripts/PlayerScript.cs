@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,6 +6,7 @@ public class PlayerScript : MonoBehaviour
 {
     [SerializeField] private MapGeneration _mapGenerator;
     [SerializeField] private GameObject _playerObject;
+    [SerializeField] private GameObject _deathParticle;
     [SerializeField] private Camera _camera;
 
     [SerializeField] private float _gracePeriod = 5f;
@@ -112,6 +114,14 @@ public class PlayerScript : MonoBehaviour
 
         if (_gracePeriod > 0f) return;
 
+        Instantiate(_deathParticle, transform);
+        StartCoroutine(DelayedDeath(2.5f));
+        enabled = false;
+    }
+
+    private IEnumerator DelayedDeath(float delay)
+    {
+        yield return new WaitForSeconds(delay);
         StartingScript.Instance.OnDeath();
     }
 
