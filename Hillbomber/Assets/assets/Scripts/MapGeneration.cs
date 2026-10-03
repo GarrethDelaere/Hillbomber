@@ -103,30 +103,34 @@ public class MapGeneration : MonoBehaviour
         Vector3 forwardDir = slopeRotation * Vector3.forward;
         Vector3 rightDir = slopeRotation * Vector3.right;
 
-        // Distance from road center to building edge
         float sideDistance = (_roadWidth / 2f) + (_buildingWidth / 2f);
-        Vector3 sideLineOrigin = isLeft
-            ? _nextRoadSpawnPoint - (rightDir * sideDistance)
-            : _nextRoadSpawnPoint + (rightDir * sideDistance);
+        Vector3 segmentSideOrigin = _nextRoadSpawnPoint + (isLeft ? -rightDir : rightDir) * sideDistance;
 
-        ref float currentOffset = ref isLeft ? ref _leftBuildingZOffset : ref _rightBuildingZOffset;
-        float targetOffset = currentOffset + _roadLength;
+        float segmentProgress = 0f;
 
-        while (currentOffset < targetOffset)
+        while (segmentProgress < _roadLength)
         {
             GameObject selectedBuilding = _buildingPrefabs[Random.Range(0, _buildingPrefabs.Count)];
 
-            // Position along slope line
-            Vector3 spawnPos = sideLineOrigin + (forwardDir * (currentOffset - (_activeRoads.Count - 1) * _roadLength + (_buildingWidth / 2f)));
+            // 1. Center coordinate along the slope path
+            Vector3 spawnPos = segmentSideOrigin + forwardDir * (segmentProgress + _buildingWidth / 2f);
 
-            // Facing rotation toward road
+            // 2. Keep building 100% upright (World Y-axis only)
             float yRotation = isLeft ? 90f : -90f;
             Quaternion buildingRotation = Quaternion.Euler(0f, yRotation, 0f);
+
+            // 3. Drop Y height so downhill edge grounds properly instead of floating in air
+            float rad = GenerationIncline * Mathf.Deg2Rad;
+            float halfDepth = _buildingWidth / 2f;
+            float heightOffset = Mathf.Sin(rad) * halfDepth;
+
+            // Offset down along Y axis
+            spawnPos.y -= heightOffset;
 
             GameObject buildingInstance = Instantiate(selectedBuilding, spawnPos, buildingRotation, transform);
             _activeBuilings.Add(buildingInstance);
 
-            currentOffset += _buildingWidth;
+            segmentProgress += _buildingWidth;
         }
     }
 
@@ -167,11 +171,12 @@ public class MapGeneration : MonoBehaviour
 
         Vector3 rightDir = slopeRotation * Vector3.right;
         Vector3 forwardDir = slopeRotation * Vector3.forward;
+        Vector3 upDir = slopeRotation * Vector3.up; // Standardized vertical direction relative to slope
 
+        // Calculate position following the slope plane instead of world space
         Vector3 carPos = roadPos
             + (rightDir * randomX)
-            + (forwardDir * randomZ)
-            + (slopeRotation * Vector3.up * 0.2f); // Slight Y-offset so wheels sit flush with road surface
+            + (forwardDir * randomZ);
 
         // Facing direction: 50% chance driving forward, 50% driving toward player (180 deg turn)
         bool driveForward = Random.value > 0.5f;
@@ -213,6 +218,15 @@ public class MapGeneration : MonoBehaviour
             {
                 Destroy(_activeBombs[i]);
                 _activeBombs.RemoveAt(i);
+            }
+        }
+
+        for (int i = _activeCars.Count - 1; i >= 0; i--)
+        {
+            if (_activeCars[i] != null && _activeCars[i].transform.position.z < destroyZ)
+            {
+                Destroy(_activeCars[i]);
+                _activeCars.RemoveAt(i);
             }
         }
     }

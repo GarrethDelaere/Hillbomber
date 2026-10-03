@@ -258,6 +258,7 @@ GameObject:
   - component: {fileID: 153489815}
   - component: {fileID: 153489814}
   - component: {fileID: 153489813}
+  - component: {fileID: 153489817}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Untagged
@@ -280,7 +281,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -358,6 +359,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &153489817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153489812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b08c2c07f27b61e449b925356cb5c234, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BombScript
 --- !u!1 &837450323
 GameObject:
   m_ObjectHideFlags: 0
@@ -529,7 +542,9 @@ MonoBehaviour:
   _gravity: -9.81
   _cameraDistance: 2
   _steeringSpeed: 12
+  _steeringDamping: 8
   _roadWidthLimit: 3.5
+  _jumpingHeight: 4.5
 --- !u!114 &1131554465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -588,7 +603,19 @@ MonoBehaviour:
     m_ActionId: 27c5f898-bc57-4ee1-8800-db469aca5fe3
     m_ActionName: 'Player/Crouch[/Keyboard/c]'
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1131554464}
+        m_TargetAssemblyTypeName: PlayerScript, Assembly-CSharp
+        m_MethodName: OnJumpAction
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: f1ba0d36-48eb-4cd5-b651-1c94a6531f70
     m_ActionName: 'Player/Jump[/Keyboard/space]'
   - m_PersistentCalls:
@@ -884,11 +911,12 @@ MonoBehaviour:
   - {fileID: 919132149155446097, guid: f6461a8f31dcec8418c9b67669185d3f, type: 3}
   - {fileID: 919132149155446097, guid: 21baad15c6f5a1f438dfd75afa22f661, type: 3}
   _carPrefabs:
-  - {fileID: 0}
-  _buildingWidth: 10
+  - {fileID: 4662905362500623678, guid: 40d9ee079b2f3cc4e918da7bfb85eae5, type: 3}
+  _buildingWidth: 6
   _roadWidth: 8
-  _roadLength: 10
+  _roadLength: 20
   _bombChance: 0.2
+  _carChance: 0.1
   _initialSegments: 10
   _spawnDistance: 150
   _destroyDistance: 20

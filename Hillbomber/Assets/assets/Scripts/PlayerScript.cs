@@ -20,16 +20,26 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float _steeringDamping = 8f;
     [SerializeField] private float _roadWidthLimit = 3.5f;
 
+    [SerializeField] private float _jumpingHeight = 3f;
+
     private float _smoothedSteeringInput;
-    private float _currentSteeringSpeed;
     private float _currentForwardSpeed;
     private Vector3 _verticalVelocity;
     private Vector2 _moveInput;
     private CharacterController _characterController;
+    private bool _isJumping;
 
     public void OnMoveAction(InputAction.CallbackContext ctx)
     {
         _moveInput = ctx.ReadValue<Vector2>();
+    }
+
+    public void OnJumpAction(InputAction.CallbackContext ctx)
+    {
+        if (_characterController.isGrounded)
+        {
+            ApplyHeight(_jumpingHeight);
+        }
     }
 
     private void Start()
@@ -86,13 +96,14 @@ public class PlayerScript : MonoBehaviour
         Vector3 forwardMove = transform.forward * _currentForwardSpeed;
         Vector3 lateralMove = transform.right * _smoothedSteeringInput;
 
-        if (_characterController.isGrounded)
+        if (_characterController.isGrounded && !_isJumping)
         {
             _verticalVelocity.y = -2f;
         }
         else
         {
             _verticalVelocity.y += _gravity * Time.deltaTime;
+            _isJumping = false;
         }
 
         Vector3 totalMotion = (forwardMove + lateralMove + _verticalVelocity) * Time.deltaTime;
@@ -138,5 +149,11 @@ public class PlayerScript : MonoBehaviour
         _camera.transform.position = Vector3.Lerp(_camera.transform.position, targetCameraPos, Time.deltaTime * 12f);
         float fovOffset = Mathf.Clamp(_currentForwardSpeed * _cameraFOVOffsetMultiplier, 0f, _cameraMaxFOVOffset);
         _camera.fieldOfView = Mathf.Lerp(_camera.fieldOfView, _cameraFOV + fovOffset, Time.deltaTime * 5f);
+    }
+
+    public void ApplyHeight(float height)
+    {
+        _verticalVelocity += new Vector3(0, height, 0);
+        _isJumping = true;
     }
 }
