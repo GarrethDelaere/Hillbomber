@@ -95,7 +95,9 @@ public class MapGeneration : MonoBehaviour
         Vector3 rampPos = roadPos + (rightDir * lanePos) + (forwardDir * (_roadLength * 0.25f));
 
         GameObject selectedRamp = _rampPrefabs[Random.Range(0, _rampPrefabs.Count)];
-        GameObject rampInstance = Instantiate(selectedRamp, rampPos, slopeRotation, transform);
+        Quaternion rampRotation = slopeRotation * selectedRamp.transform.rotation;
+
+        GameObject rampInstance = Instantiate(selectedRamp, rampPos, rampRotation, transform);
         _activeRamps.Add(rampInstance);
 
         return true;
@@ -114,7 +116,7 @@ public class MapGeneration : MonoBehaviour
         Vector3 bombPos = roadPos + (rightDir * lanePos) + (forwardDir * randomOffsetZ);
 
         GameObject selectedBomb = _bombPrefabs[Random.Range(0, _bombPrefabs.Count)];
-        GameObject bombInstance = Instantiate(selectedBomb, bombPos, slopeRotation, transform);
+        GameObject bombInstance = Instantiate(selectedBomb, bombPos, selectedBomb.transform.rotation * slopeRotation, transform);
         _activeBombs.Add(bombInstance);
     }
 
