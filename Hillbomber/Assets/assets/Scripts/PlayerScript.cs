@@ -55,6 +55,7 @@ public class PlayerScript : MonoBehaviour
     private bool _isJumping;
 
     private bool _animationPlaying;
+    private bool _speedBoostAnim;
 
     private bool _wasGroundedLastFrame;
     private float _currentImpactShake;
@@ -82,6 +83,7 @@ public class PlayerScript : MonoBehaviour
         string anim = _trickAnimationNames[Random.Range(0, _trickAnimationNames.Count - 1)];
 
         _animationPlaying = true;
+        _speedBoostAnim = true;
         StartCoroutine(CheckAnimationEnd(anim));
     }
 
@@ -187,6 +189,12 @@ public class PlayerScript : MonoBehaviour
         }
 
         _currentPermanentSpeed += _permanentExtraSpeedAcceleration * Time.deltaTime;
+
+        if (_characterController.isGrounded && _speedBoostAnim)
+        {
+            _speedBoostAnim = false;
+            _currentExtraSpeed = _extraSpeed;
+        }
 
         float targetSteering = _moveInput.x * _steeringSpeed * (_characterController.isGrounded ? 1f : _airSteerPenalty);
         _smoothedSteeringInput = Mathf.Lerp(_smoothedSteeringInput, targetSteering, Time.deltaTime * _steeringDamping);
