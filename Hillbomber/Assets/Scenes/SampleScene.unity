@@ -540,8 +540,8 @@ MonoBehaviour:
   _deceleration: 12
   _extraSpeedAcceleration: 0.5
   _extraSpeedDeceleration: 4.5
-  _permanentExtraSpeedAcceleration: 0.01
-  _gravity: -9.81
+  _permanentExtraSpeedAcceleration: 0.035
+  _gravity: -15
   _steeringSpeed: 2
   _steeringDamping: 8
   _airSteerPenalty: 0.1
