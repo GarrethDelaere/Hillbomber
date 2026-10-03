@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7511558181221131132, guid: e37f0ed8d9c98eb45a6c10c39e9c21b2, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 2f6157e83d853fd44ab529915d2e9c23, type: 2}
     - target: {fileID: 919132149155446097, guid: e37f0ed8d9c98eb45a6c10c39e9c21b2, type: 3}
       propertyPath: m_Name
       value: SM_Ramp
@@ -89,6 +93,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RampYeeter
   _rampYeetHeight: 5
+  _scoreAddition: 20
 --- !u!65 &1766180691407084594
 BoxCollider:
   m_ObjectHideFlags: 0
