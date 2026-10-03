@@ -960,6 +960,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerScript
   _gameMusic: {fileID: 410482721}
+  _videoObject: {fileID: 1625981372}
   _mapGenerator: {fileID: 2048399875}
   _playerObject: {fileID: 784973667184393160, guid: ab73700f1f8521841a2d87a995372b66, type: 3}
   _deathParticle: {fileID: 5364437434414289564, guid: 932e7b6807fae5542857edbf42d3fe7a, type: 3}
@@ -1288,6 +1289,51 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
+--- !u!1 &1214445197
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1214445199}
+  - component: {fileID: 1214445198}
+  m_Layer: 0
+  m_Name: SpeedTracker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1214445198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1214445197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6dc4ef2d03a0c546b268c115d2f6147, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SpeedTracker
+  _speedText: {fileID: 185257110}
+--- !u!4 &1214445199
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1214445197}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 139.42183, y: 0.00001, z: 1000.3189}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1540698435
 GameObject:
   m_ObjectHideFlags: 0
@@ -1418,7 +1464,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!64 &1625981373
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1829,6 +1875,11 @@ MonoBehaviour:
   - {fileID: 919132149155446097, guid: f6461a8f31dcec8418c9b67669185d3f, type: 3}
   - {fileID: 919132149155446097, guid: 21baad15c6f5a1f438dfd75afa22f661, type: 3}
   - {fileID: 7311059144794475838, guid: c3524a7e191f3f84eb16c349401f964d, type: 3}
+  - {fileID: 1918071620871233071, guid: 5d3d33ce23c963142b9614e6ef2db84f, type: 3}
+  - {fileID: 7402768767581464543, guid: e1e4961abd9292e48870830a7b7641d7, type: 3}
+  - {fileID: 8132846233236347633, guid: d85abfb72f4cc494bb5363ef282cdc49, type: 3}
+  - {fileID: 641036413807233084, guid: 378576d0716538e4e826dcf87988f0c3, type: 3}
+  - {fileID: 7897271222957466239, guid: 905cc5de5a421fd4f99f4cbcdab7551f, type: 3}
   _carPrefabs:
   - {fileID: 4662905362500623678, guid: 40d9ee079b2f3cc4e918da7bfb85eae5, type: 3}
   _buildingWidth: 6
@@ -2052,6 +2103,7 @@ SceneRoots:
   - {fileID: 985448072}
   - {fileID: 1540698437}
   - {fileID: 1836636162}
+  - {fileID: 1214445199}
   - {fileID: 1807552048026249472}
   - {fileID: 1888962446}
   - {fileID: 1833072395}

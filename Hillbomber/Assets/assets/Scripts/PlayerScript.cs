@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerScript : MonoBehaviour
 {
     [SerializeField] private AudioSource _gameMusic;
+    [SerializeField] private GameObject _videoObject;
 
     [SerializeField] private MapGeneration _mapGenerator;
     [SerializeField] private GameObject _playerObject;
@@ -217,6 +218,7 @@ public class PlayerScript : MonoBehaviour
         if (!isGrounded && _wasGroundedLastFrame)
         {
             _audioHighPass.enabled = true;
+            _videoObject.SetActive(true);
         }
 
         if (isGrounded && !_wasGroundedLastFrame)
@@ -225,6 +227,7 @@ public class PlayerScript : MonoBehaviour
             _currentImpactShake = impactForce * _landingShakeMultiplier;
 
             _audioHighPass.enabled = false;
+            _videoObject.SetActive(false);
         }
         _wasGroundedLastFrame = isGrounded;
 
