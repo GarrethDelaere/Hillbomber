@@ -115,7 +115,7 @@ public class MapGeneration : MonoBehaviour
 
             // Facing rotation toward road
             float yRotation = isLeft ? 90f : -90f;
-            Quaternion buildingRotation = slopeRotation * Quaternion.Euler(0f, yRotation, 0f);
+            Quaternion buildingRotation = Quaternion.Euler(0f, yRotation, 0f);
 
             GameObject buildingInstance = Instantiate(selectedBuilding, spawnPos, buildingRotation, transform);
             _activeBuilings.Add(buildingInstance);
