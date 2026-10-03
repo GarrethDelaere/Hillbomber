@@ -881,7 +881,7 @@ MonoBehaviour:
   _bombPrefabs:
   - {fileID: 153489812}
   _buildingPrefabs:
-  - {fileID: 4423843824074921915, guid: 6ed37608ea5897e45b34d70f8c9072f2, type: 3}
+  - {fileID: 919132149155446097, guid: f6461a8f31dcec8418c9b67669185d3f, type: 3}
   - {fileID: 919132149155446097, guid: 21baad15c6f5a1f438dfd75afa22f661, type: 3}
   _carPrefabs:
   - {fileID: 0}
