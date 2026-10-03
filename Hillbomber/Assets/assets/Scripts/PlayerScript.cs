@@ -16,9 +16,11 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float _gravity = -15f;
     [SerializeField] private float _cameraDistance = 6f;
 
-    [SerializeField] private float _steeringSpeed = 2f;
+    [SerializeField] private float _steeringSpeed = 12f;
+    [SerializeField] private float _steeringDamping = 8f;
     [SerializeField] private float _roadWidthLimit = 3.5f;
 
+    private float _smoothedSteeringInput;
     private float _currentSteeringSpeed;
     private float _currentForwardSpeed;
     private Vector3 _verticalVelocity;
@@ -75,20 +77,14 @@ public class PlayerScript : MonoBehaviour
             _currentForwardSpeed -= _deceleration * Time.deltaTime;
         }
 
-        if (_moveInput.x != 0)
-        {
-            _currentSteeringSpeed += _steeringSpeed * Time.deltaTime;
-        }
-        else
-        {
-            _currentSteeringSpeed = 0f;
-        }
+        float targetSteering = _moveInput.x * _steeringSpeed;
+        _smoothedSteeringInput = Mathf.Lerp(_smoothedSteeringInput, targetSteering, Time.deltaTime * _steeringDamping);
     }
 
     private void HandleMovement()
     {
         Vector3 forwardMove = transform.forward * _currentForwardSpeed;
-        Vector3 lateralMove = transform.right * (_moveInput.x * _currentSteeringSpeed);
+        Vector3 lateralMove = transform.right * _smoothedSteeringInput;
 
         if (_characterController.isGrounded)
         {
@@ -102,9 +98,16 @@ public class PlayerScript : MonoBehaviour
         Vector3 totalMotion = (forwardMove + lateralMove + _verticalVelocity) * Time.deltaTime;
         _characterController.Move(totalMotion);
 
+        // Soft-clamp road edge boundaries to avoid jarring position resets
         Vector3 currentPos = transform.position;
         if (Mathf.Abs(currentPos.x) > _roadWidthLimit)
         {
+            if ((currentPos.x > _roadWidthLimit && _smoothedSteeringInput > 0) ||
+                (currentPos.x < -_roadWidthLimit && _smoothedSteeringInput < 0))
+            {
+                _smoothedSteeringInput = 0f;
+            }
+
             float clampedX = Mathf.Clamp(currentPos.x, -_roadWidthLimit, _roadWidthLimit);
             _characterController.enabled = false;
             transform.position = new Vector3(clampedX, currentPos.y, currentPos.z);

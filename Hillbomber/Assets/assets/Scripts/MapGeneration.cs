@@ -15,6 +15,8 @@ public class MapGeneration : MonoBehaviour
 
     [SerializeField] private float _bombChance = 0.2f;
 
+    [SerializeField] private float _carChance = 0.1f;
+
     [SerializeField] private int _initialSegments = 10;
 
     [SerializeField] private float _spawnDistance = 150f; // how far ahead it will spawn in buildings
@@ -28,6 +30,7 @@ public class MapGeneration : MonoBehaviour
     private List<GameObject> _activeBuilings;
     private List<GameObject> _activeRoads;
     private List<GameObject> _activeBombs;
+    private List<GameObject> _activeCars;
 
     private Vector3 _nextRoadSpawnPoint = Vector3.zero;
     private float _leftBuildingZOffset = 0f;
@@ -38,6 +41,7 @@ public class MapGeneration : MonoBehaviour
         _activeBuilings = new List<GameObject>();
         _activeRoads = new List<GameObject>();
         _activeBombs = new List<GameObject>();
+        _activeCars = new List<GameObject>();
 
         // Generate initial segments if player transform is available
         if (PlayerTransform == null) return;
@@ -78,6 +82,8 @@ public class MapGeneration : MonoBehaviour
 
         // 3. Spawn Bombs / Obstacles on Road
         TrySpawnBomb(_nextRoadSpawnPoint, slopeRotation);
+
+        TrySpawnCar(_nextRoadSpawnPoint, slopeRotation);
 
         // Advance next spawn point along the incline vector
         float rad = GenerationIncline * Mathf.Deg2Rad;
@@ -149,6 +155,31 @@ public class MapGeneration : MonoBehaviour
         GameObject selectedBomb = _bombPrefabs[Random.Range(0, _bombPrefabs.Count)];
         GameObject bombInstance = Instantiate(selectedBomb, bombPos, slopeRotation, transform);
         _activeBombs.Add(bombInstance);
+    }
+
+    private void TrySpawnCar(Vector3 roadPos, Quaternion slopeRotation)
+    {
+        if (_carPrefabs == null || _carPrefabs.Count == 0 || Random.value > _carChance) return;
+
+        float halfWidthBuffer = (_roadWidth / 2f) - 1.5f; // Extra buffer for car body width
+        float randomX = Random.Range(-halfWidthBuffer, halfWidthBuffer);
+        float randomZ = Random.Range(-_roadLength / 2f, _roadLength / 2f);
+
+        Vector3 rightDir = slopeRotation * Vector3.right;
+        Vector3 forwardDir = slopeRotation * Vector3.forward;
+
+        Vector3 carPos = roadPos
+            + (rightDir * randomX)
+            + (forwardDir * randomZ)
+            + (slopeRotation * Vector3.up * 0.2f); // Slight Y-offset so wheels sit flush with road surface
+
+        // Facing direction: 50% chance driving forward, 50% driving toward player (180 deg turn)
+        bool driveForward = Random.value > 0.5f;
+        Quaternion carRotation = slopeRotation * Quaternion.Euler(0f, driveForward ? 0f : 180f, 0f);
+
+        GameObject selectedCar = _carPrefabs[Random.Range(0, _carPrefabs.Count)];
+        GameObject carInstance = Instantiate(selectedCar, carPos, carRotation, transform);
+        _activeCars.Add(carInstance);
     }
 
     private void CleanupBehindPlayer()
