@@ -108,7 +108,7 @@ public class PlayerScript : MonoBehaviour
         if (Time.timeScale <= 0f) return;
         if (_lastPosition == null) return;
 
-        if (Vector3.Distance(_lastPosition, transform.position) > 0.001) return;
+        if (Vector3.Distance(_lastPosition, transform.position) > 0.01) return;
 
         if (_gracePeriod > 0f) return;
 
