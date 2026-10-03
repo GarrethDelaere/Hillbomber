@@ -261,6 +261,7 @@ GameObject:
   m_Component:
   - component: {fileID: 410482720}
   - component: {fileID: 410482721}
+  - component: {fileID: 410482722}
   m_Layer: 0
   m_Name: OldschoolJam_ACTION_FINAL
   m_TagString: Untagged
@@ -380,6 +381,16 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!165 &410482722
+AudioHighPassFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 410482719}
+  m_Enabled: 0
+  m_CutoffFrequency: 2000
+  m_HighpassResonanceQ: 1
 --- !u!1 &811075586 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4706118808266675069, guid: ab73700f1f8521841a2d87a995372b66, type: 3}
@@ -628,6 +639,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1c2ea032f4af6341960228874398b93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerScript
+  _gameMusic: {fileID: 0}
   _mapGenerator: {fileID: 2048399875}
   _playerObject: {fileID: 784973667184393160, guid: ab73700f1f8521841a2d87a995372b66, type: 3}
   _deathParticle: {fileID: 5364437434414289564, guid: 932e7b6807fae5542857edbf42d3fe7a, type: 3}

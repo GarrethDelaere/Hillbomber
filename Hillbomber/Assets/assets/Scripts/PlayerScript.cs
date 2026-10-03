@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerScript : MonoBehaviour
 {
+    [SerializeField] private AudioSource _gameMusic;
+
     [SerializeField] private MapGeneration _mapGenerator;
     [SerializeField] private GameObject _playerObject;
     [SerializeField] private GameObject _deathParticle;
