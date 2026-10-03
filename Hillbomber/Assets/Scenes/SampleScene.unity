@@ -545,8 +545,8 @@ MonoBehaviour:
   _steeringSpeed: 2
   _steeringDamping: 8
   _airSteerPenalty: 0.1
-  _roadWidthLimit: 3.5
-  _jumpingHeight: 4.5
+  _roadWidthLimit: 3.8
+  _jumpingHeight: 1
   _cameraDistance: 2
   _cameraFOV: 70
   _cameraMaxFOVOffset: 10
@@ -919,6 +919,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MapGeneration
   _roadPrefabs:
   - {fileID: 837450323}
+  _rampPrefabs:
+  - {fileID: 0}
   _bombPrefabs:
   - {fileID: 153489812}
   _buildingPrefabs:
@@ -930,8 +932,10 @@ MonoBehaviour:
   _buildingWidth: 6
   _roadWidth: 8
   _roadLength: 20
+  _lanesCount: 3
+  _rampChance: 0.15
   _bombChance: 0.2
-  _carChance: 0.1
+  _carChance: 0.45
   _initialSegments: 10
   _spawnDistance: 150
   _destroyDistance: 20
@@ -959,6 +963,6 @@ SceneRoots:
   - {fileID: 1143367933}
   - {fileID: 103375391}
   - {fileID: 2048399876}
+  - {fileID: 1131554463}
   - {fileID: 153489816}
   - {fileID: 837450327}
-  - {fileID: 1131554463}

@@ -224,7 +224,7 @@ public class PlayerScript : MonoBehaviour
 
     public void ApplyHeight(float height)
     {
-        float jumpVelocity = Mathf.Sqrt(_jumpingHeight * -2f * _gravity);
+        float jumpVelocity = Mathf.Sqrt(height * -2f * _gravity);
         _verticalVelocity.y = jumpVelocity;
         _isJumping = true;
     }
