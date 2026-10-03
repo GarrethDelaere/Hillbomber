@@ -8,15 +8,20 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private Camera _camera;
 
     [SerializeField] private float _speed = 15f;
+    [SerializeField] private float _extraSpeed = 5f;
     [SerializeField] private float _acceleration = 10f;
     [SerializeField] private float _deceleration = 12f;
+    [SerializeField] private float _extraSpeedAcceleration = 0.5f;
+    [SerializeField] private float _extraSpeedDeceleration = 20f;
+    [SerializeField] private float _permanentExtraSpeedAcceleration = 0.01f;
     [SerializeField] private float _gravity = -15f;
 
     [SerializeField] private float _steeringSpeed = 12f;
     [SerializeField] private float _steeringDamping = 8f;
+    [SerializeField] private float _airSteerPenalty = 0.1f;
     [SerializeField] private float _roadWidthLimit = 3.5f;
 
-    [SerializeField] private float _jumpingHeight = 3f;
+    [SerializeField] private float _jumpingHeight = 2f;
 
     [SerializeField] private float _cameraDistance = 6f;
     [SerializeField] private float _cameraFOV = 70f;
@@ -27,16 +32,22 @@ public class PlayerScript : MonoBehaviour
     [SerializeField] private float _cameraRollAngle = 3f;
     [SerializeField] private float _speedShakeIntensity = 0.03f;
     [SerializeField] private float _landingShakeMultiplier = 0.08f;
+    [SerializeField] private float _speedShakeAirMultiplier = 3f;
+
+    [SerializeField] private float _visualYawAngle = 7f;
+    [SerializeField] private float _visualRollAngle = 3f;
+    [SerializeField] private float _tiltSmoothSpeed = 10f;
 
     private float _smoothedSteeringInput;
     private float _currentForwardSpeed;
+    private float _currentExtraSpeed;
+    private float _currentPermanentSpeed;
     private Vector3 _verticalVelocity;
     private Vector2 _moveInput;
     private CharacterController _characterController;
     private bool _isJumping;
 
     private bool _wasGroundedLastFrame;
-    private float _currentImpulseShake;
     private float _currentImpactShake;
 
     public void OnMoveAction(InputAction.CallbackContext ctx)
@@ -91,13 +102,26 @@ public class PlayerScript : MonoBehaviour
         if (_currentForwardSpeed < _speed)
         {
             _currentForwardSpeed += _acceleration * Time.deltaTime;
+            _currentForwardSpeed = Mathf.Min(_currentForwardSpeed, _speed);
         }
         else if (_currentForwardSpeed > _speed)
         {
             _currentForwardSpeed -= _deceleration * Time.deltaTime;
         }
 
-        float targetSteering = _moveInput.x * _steeringSpeed;
+        if (_characterController.isGrounded && _currentForwardSpeed >= _speed)
+        {
+            _currentExtraSpeed += _extraSpeedAcceleration * Time.deltaTime;
+            _currentExtraSpeed = Mathf.Min(_currentExtraSpeed, _extraSpeed);
+        }
+        else if (!_characterController.isGrounded)
+        {
+            _currentExtraSpeed = Mathf.MoveTowards(_currentExtraSpeed, 0f, _extraSpeedDeceleration * Time.deltaTime);
+        }
+
+        _currentPermanentSpeed += _permanentExtraSpeedAcceleration * Time.deltaTime;
+
+        float targetSteering = _moveInput.x * _steeringSpeed * (_characterController.isGrounded ? 1f : _airSteerPenalty);
         _smoothedSteeringInput = Mathf.Lerp(_smoothedSteeringInput, targetSteering, Time.deltaTime * _steeringDamping);
     }
 
@@ -105,19 +129,15 @@ public class PlayerScript : MonoBehaviour
     {
         bool isGrounded = _characterController.isGrounded;
 
-        // --- LANDING DETECTION FIX ---
-        // Detect impact BEFORE resetting _verticalVelocity.y
         if (isGrounded && !_wasGroundedLastFrame)
         {
             float impactForce = Mathf.Abs(_verticalVelocity.y);
-            if (impactForce > 3f) // Trigger impact if falling faster than -3 units/sec
-            {
-                _currentImpactShake = impactForce * _landingShakeMultiplier;
-            }
+            _currentImpactShake = impactForce * _landingShakeMultiplier;
         }
         _wasGroundedLastFrame = isGrounded;
 
-        Vector3 forwardMove = transform.forward * _currentForwardSpeed;
+        float totalSpeed = _currentForwardSpeed + _currentExtraSpeed + _currentPermanentSpeed;
+        Vector3 forwardMove = transform.forward * totalSpeed;
         Vector3 lateralMove = transform.right * _smoothedSteeringInput;
 
         if (_characterController.isGrounded && !_isJumping)
@@ -133,7 +153,6 @@ public class PlayerScript : MonoBehaviour
         Vector3 totalMotion = (forwardMove + lateralMove + _verticalVelocity) * Time.deltaTime;
         _characterController.Move(totalMotion);
 
-        // Soft-clamp road edge boundaries to avoid jarring position resets
         Vector3 currentPos = transform.position;
         if (Mathf.Abs(currentPos.x) > _roadWidthLimit)
         {
@@ -154,16 +173,20 @@ public class PlayerScript : MonoBehaviour
     {
         if (_playerObject == null) return;
 
-        float targetTilt = -_moveInput.x * 15f;
-        Quaternion targetRotation = Quaternion.Euler(0f, 0f, targetTilt);
-        _playerObject.transform.localRotation = Quaternion.Slerp(
-            _playerObject.transform.localRotation,
+        float inputX = _moveInput.x;
+        float targetYaw = inputX * _visualYawAngle;
+        float targetRoll = -inputX * _visualRollAngle;
+
+        Quaternion targetRotation = Quaternion.Euler(_mapGenerator.GenerationIncline, targetYaw, targetRoll);
+
+        transform.localRotation = Quaternion.Slerp(
+            transform.localRotation,
             targetRotation,
-            Time.deltaTime * 10f
+            Time.deltaTime * _tiltSmoothSpeed
         );
     }
 
-   private void UpdateCamera()
+    private void UpdateCamera()
     {
         if (_camera == null) return;
 
@@ -171,15 +194,20 @@ public class PlayerScript : MonoBehaviour
             - (transform.forward * _cameraDistance)
             + (transform.up * (_cameraDistance * 0.4f));
 
-        float speedRatio = Mathf.Clamp01(_currentForwardSpeed / _speed);
-        float continuousRumble = speedRatio * _speedShakeIntensity;
+        float totalSpeed = _currentForwardSpeed + _currentExtraSpeed + _currentPermanentSpeed;
+        float maxPossibleSpeed = _speed + _extraSpeed;
 
-        float totalShake = continuousRumble + _currentImpulseShake;
+        float speedRatio = Mathf.Clamp01(totalSpeed / maxPossibleSpeed);
+        float continuousRumble = speedRatio * _speedShakeIntensity * (_characterController.isGrounded ? 1 : _speedShakeAirMultiplier);
+
+        _currentImpactShake = Mathf.Lerp(_currentImpactShake, 0f, Time.deltaTime * 2f);
+
+        float totalShake = continuousRumble + _currentImpactShake;
         Vector3 shakeOffset = Random.insideUnitSphere * totalShake;
 
         _camera.transform.position = Vector3.Lerp(
-            _camera.transform.position, 
-            targetCameraPos + shakeOffset, 
+            _camera.transform.position,
+            targetCameraPos + shakeOffset,
             Time.deltaTime * 12f
         );
 
@@ -187,16 +215,17 @@ public class PlayerScript : MonoBehaviour
         Quaternion targetRotation = transform.rotation * Quaternion.Euler(5f, 0f, targetCameraRoll);
         _camera.transform.rotation = Quaternion.Slerp(_camera.transform.rotation, targetRotation, Time.deltaTime * 8f);
 
-        float speedFovOffset = Mathf.Clamp(_currentForwardSpeed * _cameraFOVOffsetMultiplier, 0f, _cameraMaxFOVOffset);
+        float speedFovOffset = Mathf.Clamp(totalSpeed * _cameraFOVOffsetMultiplier, 0f, _cameraMaxFOVOffset);
         float airborneFovOffset = !_characterController.isGrounded ? _airborneFOVBoost : 0f;
-        
+
         float targetFOV = _cameraFOV + speedFovOffset + airborneFovOffset;
         _camera.fieldOfView = Mathf.Lerp(_camera.fieldOfView, targetFOV, Time.deltaTime * 5f);
     }
 
     public void ApplyHeight(float height)
     {
-        _verticalVelocity += new Vector3(0, height, 0);
+        float jumpVelocity = Mathf.Sqrt(_jumpingHeight * -2f * _gravity);
+        _verticalVelocity.y = jumpVelocity;
         _isJumping = true;
     }
 }
